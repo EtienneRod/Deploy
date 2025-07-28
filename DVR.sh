@@ -9,10 +9,8 @@
 
 # Load sensitives info from variables.env in order to not hardcode them in files push to GitHub
 # Variable list
-  # $password
   # $pushoveremail
   # $myemail
-  # $hcpingurl
 export $(grep -v '^#' variables.env | xargs);
 
 adduser --allow-bad-names Etienne;
