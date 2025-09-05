@@ -7,6 +7,10 @@
 # Disk: 30G  Core: 8  RAM : 8192
 # IPV4: 172.27.27.39/24  GW: 172.27.27.1  Domain: home.famillerg.com DNS: 172.27.27.1 
 
+# Set temporary PATH
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;
+export PATH="$PATH:test";
+
 # Load sensitives info from variables.env in order to not hardcode them in files push to GitHub
 # Variable list
   # $pushoveremail
