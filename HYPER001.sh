@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set temporary PATH
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;
+export PATH="$PATH:test";
+
 # Load sensitives info from variables.env in order to not hardcode them in files push to GitHub
 # Variable list
   # $password
