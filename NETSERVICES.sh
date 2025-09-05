@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set temporary PATH
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;
+export PATH="$PATH:test";
+
 # From HYPER
 # bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/docker.sh)"
 # Container Type: Unprivileged
