@@ -21,9 +21,9 @@ adduser --allow-bad-names Etienne;
 echo $'Etienne ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers;
 
 mkdir -p /home/Etienne/.ssh && chmod 700 /home/Etienne/.ssh;
-scp -i /home/Etienne/.ssh/id_rsa Etienne@172.27.27.32:/mnt/Share/Configurations/SSH/id_rsa /home/Etienne/.ssh/id_rsa;
-scp -i /home/Etienne/.ssh/id_rsa Etienne@172.27.27.32:/mnt/Share/Configurations/SSH/authorized_keys /home/Etienne/.ssh/authorized_keys;
-scp -i /home/Etienne/.ssh/id_rsa Etienne@172.27.27.32:/mnt/Share/Configurations/SSH/id_rsa.pub /home/Etienne/.ssh/id_rsa.pub;
+scp -i /home/Etienne/.ssh/id_rsa Etienne@NAS:/mnt/Share/Configurations/SSH/id_rsa /home/Etienne/.ssh/id_rsa;
+scp -i /home/Etienne/.ssh/id_rsa Etienne@NAS:/mnt/Share/Configurations/SSH/authorized_keys /home/Etienne/.ssh/authorized_keys;
+scp -i /home/Etienne/.ssh/id_rsa Etienne@NAS:/mnt/Share/Configurations/SSH/id_rsa.pub /home/Etienne/.ssh/id_rsa.pub;
 chown -R Etienne:Etienne /home/Etienne/.ssh && chmod -R 600 /home/Etienne/.ssh/*;
 
 cat <<EOF > /etc/profile.d/00_lxc-details.sh
@@ -32,7 +32,8 @@ echo -e "    🏠   Hostname: \$(hostname -f)";
 echo -e "    💡   IP Address: \$(hostname -I | awk '{print $1}')";
 EOF
 
-apt update && apt -y upgrade && apt install -y vim ncat sysstat iotop telnet ssmtp mailutils net-tools needrestart rsync cron dnsutils;
+apt update && apt -y upgrade && apt install -y vim ncat sysstat iotop telnet ssmtp mailutils net-tools needrestart rsync cron dnsutils linux-sysctl-defaults;
+setcap cap_net_raw+ep /bin/ping;
 
 update-alternatives --set editor /usr/bin/vim.basic;
 cat <<EOF > /etc/vim/vimrc.local
@@ -64,17 +65,9 @@ sed -i 's/mailhub=mail/mailhub=smtp.home.famillerg.com/g' /etc/ssmtp/ssmtp.conf;
 
 (crontab -u root -l ; echo "MAILTO=$pushoveremail") | crontab -u root -;
 (crontab -u root -l ; echo "MAILFROM=$myemail") | crontab -u root -;
+(crontab -u root -l ; echo "#0 23 * * 6 /usr/bin/docker image prune -a -f > /dev/null 2>&1") | crontab -u root -;
 
 usermod -aG docker Etienne && newgrp docker;
-
-docker run -d \
--p 8000:8000 -p 9443:9443 \
---user "1000:1000" \
---name portainer \
---restart=unless-stopped \
- -v /var/run/docker.sock:/var/run/docker.sock\
- -v /home/Etienne/Portainer/Config:/data \
- docker.io/portainer/portainer-ce:lts;
 
 docker run -d \
 -p 9001:9001 \
@@ -83,6 +76,15 @@ docker run -d \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /var/lib/docker/volumes:/var/lib/docker/volumes \
 docker.io/portainer/agent:latest;
+
+docker run -d \
+-p 8000:8000 -p 9443:9443 \
+--user "1000:1000" \
+--name portainer \
+--restart=unless-stopped \
+ -v /var/run/docker.sock:/var/run/docker.sock\
+ -v /home/Etienne/Portainer/Config:/data \
+docker.io/portainer/portainer-ce:lts;
 
 # Deploy Netservices Stack from Portainer
 
