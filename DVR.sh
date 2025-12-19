@@ -73,16 +73,6 @@ sed -i 's/mailhub=mail/mailhub=smtp.home.famillerg.com/g' /etc/ssmtp/ssmtp.conf;
 (crontab -u root -l ; echo "#0 0 * * * /home/Etienne/HK/Media.sh > /home/Etienne/HK/Media.log 2>&1") | crontab -u root -;
 (crontab -u root -l ; echo "#0 23 * * 6 /usr/bin/docker image prune -a -f > /dev/null 2>&1") | crontab -u root -;
 
-usermod -aG docker Etienne && newgrp docker;
-
-docker run -d \
--p 9001:9001 \
---name portainer-agent \
---restart=unless-stopped \
--v /var/run/docker.sock:/var/run/docker.sock \
--v /var/lib/docker/volumes:/var/lib/docker/volumes \
-docker.io/portainer/agent:latest;
-
-# Deploy DVR Stack from Portainer
+usermod -aG docker Etienne && newgrp docker && docker compose -f /home/Etienne/compose.yaml up -d;
 
 exit 0;
