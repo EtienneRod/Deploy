@@ -67,25 +67,6 @@ sed -i 's/mailhub=mail/mailhub=smtp.home.famillerg.com/g' /etc/ssmtp/ssmtp.conf;
 (crontab -u root -l ; echo "MAILFROM=$myemail") | crontab -u root -;
 (crontab -u root -l ; echo "#0 23 * * 6 /usr/bin/docker image prune -a -f > /dev/null 2>&1") | crontab -u root -;
 
-usermod -aG docker Etienne && newgrp docker;
-
-docker run -d \
--p 9001:9001 \
---name portainer-agent \
---restart=unless-stopped \
--v /var/run/docker.sock:/var/run/docker.sock \
--v /var/lib/docker/volumes:/var/lib/docker/volumes \
-docker.io/portainer/agent:latest;
-
-docker run -d \
--p 8000:8000 -p 9443:9443 \
---user "1000:1000" \
---name portainer \
---restart=unless-stopped \
- -v /var/run/docker.sock:/var/run/docker.sock\
- -v /home/Etienne/Portainer/Config:/data \
-docker.io/portainer/portainer-ce:lts;
-
-# Deploy Netservices Stack from Portainer
+usermod -aG docker Etienne && newgrp docker && docker compose -f /home/Etienne/compose.yaml up -d;
 
 exit 0;
